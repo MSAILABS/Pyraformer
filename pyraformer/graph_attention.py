@@ -85,9 +85,12 @@ def get_k_q(q_k_mask):
     k_q_mask = q_k_mask.clone()
     for i in range(len(q_k_mask)):
         for j in range(len(q_k_mask[0])):
-            if q_k_mask[i, j] >= 0:
-                k_q_mask[i, j] = torch.where(q_k_mask[q_k_mask[i, j]] ==i )[0]
-    
+            if q_k_mask[i, j] >= 0 and q_k_mask[i, j] < q_k_mask.shape[0]:  # Ensure valid index
+                # k_q_mask[i, j] = torch.where(q_k_mask[q_k_mask[i, j]] ==i )[0]
+                indices = torch.where(q_k_mask[q_k_mask[i, j]] == i)[0]
+                if indices.numel() > 0:  # Ensure non-empty result
+                    k_q_mask[i, j] = indices[0]
+
     return k_q_mask
 
 
